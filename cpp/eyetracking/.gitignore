@@ -1,0 +1,63 @@
+# ---- Visual Studio ----
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.dll
+
+# Build results
+[Bb]uild/
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+ARM/
+ARM64/
+bin/
+obj/
+out/
+
+# Visual Studio cache
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# ---- OpenCV ----
+# Don’t commit OpenCV binaries you downloaded
+opencv/build/
+opencv/bin/
+opencv/lib/
+opencv/*.dll
+*.pdb
+
+# ---- Logs & Temp ----
+*.log
+*.tlog
+*.lastbuildstate
+*.idb
+*.ilk
+*.pch
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+
+# ---- OS crap ----
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# ---- CMake (if you use it) ----
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+*.cmake
