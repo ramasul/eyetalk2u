@@ -3,45 +3,34 @@
 
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include <vector>
+#include <cmath>
+#include <complex>
+#include <algorithm>
+#include "Utils.h"
 
-// Function to brighten + enhance contrast manually
-cv::Mat brightenManual(const cv::Mat& input, float alpha = 1.2f, int beta = 40) {
-    cv::Mat output(input.rows, input.cols, input.type());
-
-    for (int y = 0; y < input.rows; y++) {
-        for (int x = 0; x < input.cols; x++) {
-            cv::Vec3b color = input.at<cv::Vec3b>(y, x);
-            cv::Vec3b newColor;
-
-            for (int c = 0; c < 3; c++) {
-                int newValue = static_cast<int>(alpha * color[c] + beta);
-                newColor[c] = cv::saturate_cast<uchar>(newValue); // clamp 0–255
-            }
-
-            output.at<cv::Vec3b>(y, x) = newColor;
-        }
-    }
-
-    return output;
-}
-
+// ------------------- Main -------------------
 int main() {
     cv::VideoCapture cap(0);
-    if (!cap.isOpened()) {
-        std::cerr << "Error: Could not open camera." << std::endl;
-        return -1;
-    }
+    if (!cap.isOpened()) { std::cerr << "Cannot open camera\n"; return -1; }
 
-    cv::Mat frame, brightFrame;
+    cv::Mat frame, gray, smallGray, blurred;
 
     while (true) {
         cap >> frame;
         if (frame.empty()) break;
 
-        // Brighten dark frames
-        brightFrame = brightenManual(frame, 1.3f, 20); // tweak alpha/beta
+        // Convert to grayscale
+        cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
-        cv::imshow("Brightened Webcam", brightFrame);
+        // Downscale frame for speed
+        cv::resize(gray, smallGray, cv::Size(256, 256));
+
+        // Separable Gaussian blur
+        blurred = Utils::separableGaussian(smallGray, 11, 3.0);
+
+        //cv::imshow("Original Gray", smallGray);
+        cv::imshow("Separable Gaussian Blur", blurred);
 
         if (cv::waitKey(1) == 'q') break;
     }
