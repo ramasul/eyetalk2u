@@ -27,10 +27,14 @@ int main() {
         cv::resize(gray, smallGray, cv::Size(256, 256));
 
         // Separable Gaussian blur
-        blurred = Utils::separableGaussian(smallGray, 11, 3.0);
+        blurred = Utils::fftGaussianBlur(smallGray, 3);
+
+        // Canny edge detection after blurring
+        cv::Mat edges;
+        cv::Canny(blurred, edges, 20, 60); // thresholds: adjust as needed
 
         //cv::imshow("Original Gray", smallGray);
-        cv::imshow("Separable Gaussian Blur", blurred);
+        cv::imshow("Separable Gaussian Blur", edges);
 
         if (cv::waitKey(1) == 'q') break;
     }
