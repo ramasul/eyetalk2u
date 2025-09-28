@@ -23,3 +23,8 @@ For example if your OpenCV version is 4.12.0 then add
 2. Under C/C++ &rarr; Optimization change `Optimization` from `Disabled (/Od)` to `Maximum Optimization (Favor Speed) (/O2)`
 3. Under C/C++ &rarr; Code Generation change `Floating Point Model` from `Precise (/fp:precise)` to `Fast (/fp:fast)`
 4. Under C/C++ &rarr; Language set Open MP Support to `Yes (/openmp)`
+
+### Namespace Setup
+1. Right-click on project &rarr; Properties
+2. Under C/C++ &rarr; General &rarr; Additional Include Directories:
+```$(ProjectDir)include```
