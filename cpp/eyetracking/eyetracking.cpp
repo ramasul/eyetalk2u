@@ -8,13 +8,16 @@
 #include <complex>
 #include <algorithm>
 #include "Utils.h"
+#include "Resize.h"
+#include "EdgeDetection.h"
+#include "Blur.h"
 
 // ------------------- Main -------------------
 int main() {
     cv::VideoCapture cap(0);
     if (!cap.isOpened()) { std::cerr << "Cannot open camera\n"; return -1; }
 
-    cv::Mat frame, gray, smallGray, blurred;
+    cv::Mat frame, gray, smallGray, blurred, edge;
 
     while (true) {
         cap >> frame;
@@ -24,17 +27,21 @@ int main() {
         cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
         // Downscale frame for speed
-        cv::resize(gray, smallGray, cv::Size(256, 256));
+        Resize::resize(gray, smallGray, cv::Size(256, 256));
+
+		blurred = vision::blur::GaussianBlur(smallGray, 3.0);
 
         // Separable Gaussian blur
-        blurred = Utils::fftGaussianBlur(smallGray, 3);
+        //blurred = Utils::fftGaussianBlur(smallGray, 5);
+		//edge = vision::canny::canny(smallGray, true, true, 128, 0.8f, 0.5f);
+        //cv::Canny(smallGray, edge, 50, 150);
 
         // Canny edge detection after blurring
-        cv::Mat edges;
-        cv::Canny(blurred, edges, 20, 60); // thresholds: adjust as needed
+        //cv::Mat edges;
+        //cv::Canny(blurred, edges, 20, 60); // thresholds: adjust as needed
 
         //cv::imshow("Original Gray", smallGray);
-        cv::imshow("Separable Gaussian Blur", edges);
+        cv::imshow("Separable Gaussian Blur", blurred);
 
         if (cv::waitKey(1) == 'q') break;
     }

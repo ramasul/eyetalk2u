@@ -30,12 +30,36 @@
     <ClCompile Include="src\Utils.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Resize.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EdgeDetection.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Blur.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Utils.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PuRe.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Resize.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Detector.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EdgeDetection.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Blur.h">
       <Filter>Source Files\include</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,9 +1,14 @@
 #include "EdgeDetection.h"
 #include "Utils.h"
+#include <iostream>
+#include <cmath>
 
 namespace vision {
 	namespace canny {
 		cv::Mat canny(const cv::Mat& in, bool blurImage, bool useL2, int bins, float nonEdgePixelsRatio, float lowHighThresholdRatio) {
+			CV_Assert(!in.empty());
+			CV_Assert(in.channels() == 1);
+
 			cv::Size workingSize;
 			workingSize.width = in.cols;
 			workingSize.height = in.rows;
@@ -11,7 +16,7 @@ namespace vision {
 			cv::Mat dx= cv::Mat::zeros(workingSize, CV_32F), dy = cv::Mat::zeros(workingSize, CV_32F), magnitude = cv::Mat::zeros(workingSize, CV_32F);
 			cv::Mat edgeType = cv::Mat::zeros(workingSize, CV_8U), edge = cv::Mat::zeros(workingSize, CV_8U);
 
-			(void)useL2; // Unused parameter, Sebenernya buat implement norm aja
+			//(void)useL2; // Unused parameter, Sebenernya buat implement norm aja
 			/* Step 1: Smoothing & Directional Gradients  */
 
 			cv::Mat blurred;
@@ -21,8 +26,9 @@ namespace vision {
 			}
 			else blurred = in;
 
-			cv::Sobel(blurred, dx, dx.type(), 1, 0, 3, 1, 0, cv::BORDER_REPLICATE);
-			cv::Sobel(blurred, dy, dy.type(), 0, 1, 7, 1, 0, cv::BORDER_REPLICATE);
+			const int sobel_ksize = 7;
+			cv::Sobel(blurred, dx, dx.type(), 1, 0, sobel_ksize, 1, 0, cv::BORDER_REPLICATE); // ksize = 3 di sourcenya
+			cv::Sobel(blurred, dy, dy.type(), 0, 1, sobel_ksize, 1, 0, cv::BORDER_REPLICATE); // ksize = 7 di sourcenya
 
 			/* Magnitude */
 			double minMag = 0;
@@ -30,7 +36,17 @@ namespace vision {
 			float* p_res;
 			float* p_x, * p_y; // result, x, y
 
-			cv::magnitude(dx, dy, magnitude);
+			// magnitude (L2)
+			if (useL2) {
+				cv::magnitude(dx, dy, magnitude);
+			}
+			else {
+				// L1 approx: |dx| + |dy|
+				cv::Mat absx, absy;
+				cv::absdiff(dx, cv::Scalar(0), absx);
+				cv::absdiff(dy, cv::Scalar(0), absy);
+				magnitude = absx + absy;
+			}
 
 			/* Normalization */
 			cv::minMaxLoc(magnitude, &minMag, &maxMag);
