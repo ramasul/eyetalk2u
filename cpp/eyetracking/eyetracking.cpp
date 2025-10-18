@@ -11,13 +11,14 @@
 #include "Resize.h"
 #include "EdgeDetection.h"
 #include "Blur.h"
+#include "HistEq.h"
 
 // ------------------- Main -------------------
 int main() {
     cv::VideoCapture cap(0);
     if (!cap.isOpened()) { std::cerr << "Cannot open camera\n"; return -1; }
 
-    cv::Mat frame, gray, smallGray, blurred, edge;
+    cv::Mat frame, gray, smallGray, blurred, edge, clahe;
 
     while (true) {
         cap >> frame;
@@ -27,9 +28,11 @@ int main() {
         cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
         // Downscale frame for speed
-        Resize::resize(gray, smallGray, cv::Size(324, 256));
+        smallGray = vision::resize::resize(gray, cv::Size(324, 256));
 
-		blurred = vision::blur::GaussianBlur(smallGray, 1.0);
+		clahe = vision::histeq::CLAHE(smallGray, 2.0, cv::Size(8, 8));
+
+		blurred = vision::blur::GaussianBlur(clahe, 1.0);
 		//blurred = vision::blur::FFTGaussianBlur(smallGray, 1.0);
 
         // Separable Gaussian blur

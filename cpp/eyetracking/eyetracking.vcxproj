@@ -144,6 +144,7 @@
     <ClCompile Include="eyetracking.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="src\Blur.cpp" />
+    <ClCompile Include="src\HistEq.cpp" />
     <ClCompile Include="src\EdgeDetection.cpp" />
     <ClCompile Include="src\Resize.cpp" />
     <ClCompile Include="src\Utils.cpp" />
@@ -153,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Blur.h" />
+    <ClInclude Include="include\HistEq.h" />
     <ClInclude Include="include\EdgeDetection.h" />
     <ClInclude Include="include\PuRe.h" />
     <ClInclude Include="include\Resize.h" />
