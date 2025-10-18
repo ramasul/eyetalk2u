@@ -1,13 +1,5 @@
 #include "Utils.h"
 
-template<typename T>
-T clamp(T val, T minVal, T maxVal) {
-    if (val < minVal) return minVal;
-    if (val > maxVal) return maxVal;
-    return val;
-}
-
-
 // ------------------- Iterative 1D FFT (radix-2) -------------------
 void Utils::fft1D(std::vector<Complex>& a, bool invert) {
     int n = a.size();

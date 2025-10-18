@@ -13,6 +13,13 @@
 
 using Complex = std::complex<double>;
 
+template<typename T>
+T clamp(T val, T minVal, T maxVal) {
+    if (val < minVal) return minVal;
+    if (val > maxVal) return maxVal;
+    return val;
+}
+
 namespace Utils {
     void fft1D(std::vector<Complex>& a, bool invert);
     void fft2D(std::vector<std::vector<Complex>>& data, bool invert);
