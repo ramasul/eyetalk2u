@@ -21,9 +21,4 @@ T clamp(T val, T minVal, T maxVal) {
 }
 
 namespace Utils {
-    void fft1D(std::vector<Complex>& a, bool invert);
-    void fft2D(std::vector<std::vector<Complex>>& data, bool invert);
-    std::vector<double> gaussianKernel1D(int ksize, double sigma);
-    cv::Mat separableGaussian(const cv::Mat& gray, int ksize = 11, double sigma = 3.0);
-    cv::Mat fftGaussianBlur(const cv::Mat& gray, double sigma);
 }
