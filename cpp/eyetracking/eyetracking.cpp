@@ -27,21 +27,24 @@ int main() {
         cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
         // Downscale frame for speed
-        Resize::resize(gray, smallGray, cv::Size(256, 256));
+        Resize::resize(gray, smallGray, cv::Size(324, 256));
 
-		blurred = vision::blur::GaussianBlur(smallGray, 3.0);
+		blurred = vision::blur::GaussianBlur(smallGray, 1.0);
+		//blurred = vision::blur::FFTGaussianBlur(smallGray, 1.0);
 
         // Separable Gaussian blur
         //blurred = Utils::fftGaussianBlur(smallGray, 5);
 		//edge = vision::canny::canny(smallGray, true, true, 128, 0.8f, 0.5f);
         //cv::Canny(smallGray, edge, 50, 150);
 
+		edge = vision::canny::canny(blurred, false, true, 64, 0.8f, 0.5f);
+
         // Canny edge detection after blurring
         //cv::Mat edges;
         //cv::Canny(blurred, edges, 20, 60); // thresholds: adjust as needed
 
         //cv::imshow("Original Gray", smallGray);
-        cv::imshow("Separable Gaussian Blur", blurred);
+        cv::imshow("Separable Gaussian Blur", edge);
 
         if (cv::waitKey(1) == 'q') break;
     }
