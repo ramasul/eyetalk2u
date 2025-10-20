@@ -81,6 +81,31 @@ namespace vision {
                             }
                         }
                     }
+                    else if (interpolation == INTER_AREA) {
+                        // Weighted average of the pixels in the source area
+                        if (channels == 1) {
+                            double sum = 0.0;
+                            int count = 0;
+                            for (int yy = y0; yy < y1; yy++) {
+                                for (int xx = x0; xx < x1; xx++) {
+                                    sum += src.at<uchar>(yy, xx);
+                                    count++;
+                                }
+                            }
+                            dst.at<uchar>(y, x) = cv::saturate_cast<uchar>(sum / count);
+                        }
+                        else if (channels == 3) {
+                            double sum[3] = { 0,0,0 };
+                            int count = 0;
+                            for (int yy = y0; yy < y1; yy++) {
+                                for (int xx = x0; xx < x1; xx++) {
+                                    for (int c = 0; c < 3; c++) sum[c] += src.at<cv::Vec3b>(yy, xx)[c];
+                                    count++;
+                                }
+                            }
+                            for (int c = 0; c < 3; c++) dst.at<cv::Vec3b>(y, x)[c] = cv::saturate_cast<uchar>(sum[c] / count);
+                        }
+                    }
                 }
             }
         }
