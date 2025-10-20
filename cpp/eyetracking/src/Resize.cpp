@@ -4,6 +4,16 @@
 
 namespace vision {
     namespace resize {
+
+        inline double cubicWeight(double x) {
+            x = std::abs(x);
+            if (x <= 1)
+                return 1 - 2 * x * x + x * x * x;
+            else if (x < 2)
+                return 4 - 8 * x + 5 * x * x - x * x * x;
+            return 0;
+        }
+
         void resize(const cv::Mat& src,
             cv::Mat& dst,
             cv::Size dsize,
@@ -104,6 +114,28 @@ namespace vision {
                                 }
                             }
                             for (int c = 0; c < 3; c++) dst.at<cv::Vec3b>(y, x)[c] = cv::saturate_cast<uchar>(sum[c] / count);
+                        }
+                    }
+                    else if (interpolation == INTER_CUBIC) {
+                        // Bicubic 4x4 neighborhood
+                        for (int c = 0; c < channels; c++) {
+                            double val = 0.0;
+                            for (int m = -1; m <= 2; m++) {
+                                int ym = clamp(y0 + m, 0, src.rows - 1);
+                                double wy = cubicWeight(m - sy);
+                                for (int n = -1; n <= 2; n++) {
+                                    int xn = clamp(x0 + n, 0, src.cols - 1);
+                                    double wx = cubicWeight(n - sx);
+                                    if (channels == 1)
+                                        val += src.at<uchar>(ym, xn) * wx * wy;
+                                    else
+                                        val += src.at<cv::Vec3b>(ym, xn)[c] * wx * wy;
+                                }
+                            }
+                            if (channels == 1)
+                                dst.at<uchar>(y, x) = cv::saturate_cast<uchar>(val);
+                            else
+                                dst.at<cv::Vec3b>(y, x)[c] = cv::saturate_cast<uchar>(val);
                         }
                     }
                 }
