@@ -12,13 +12,16 @@
 #include "EdgeDetection.h"
 #include "Blur.h"
 #include "HistEq.h"
+#include "Color.h"
+#include "EdgeProcessing.h"
+#include "PuRe.h"
 
 // ------------------- Main -------------------
 int main() {
     cv::VideoCapture cap(0);
     if (!cap.isOpened()) { std::cerr << "Cannot open camera\n"; return -1; }
 
-    cv::Mat frame, gray, smallGray, blurred, edge, clahe;
+    cv::Mat frame, gray, smallGray, blurred, edge, clahe, filtered;
 
     while (true) {
         cap >> frame;
@@ -26,9 +29,10 @@ int main() {
 
         // Convert to grayscale
         cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+		//gray = vision::color::BGR2Gray(frame);
 
         // Downscale frame for speed
-        smallGray = vision::resize::resize(gray, cv::Size(324, 256));
+        smallGray = vision::resize::resize(gray, cv::Size(512, 512));
 
 		clahe = vision::histeq::CLAHE(smallGray, 2.0, cv::Size(8, 8));
 
@@ -47,7 +51,9 @@ int main() {
         //cv::Canny(blurred, edges, 20, 60); // thresholds: adjust as needed
 
         //cv::imshow("Original Gray", smallGray);
-        cv::imshow("Separable Gaussian Blur", edge);
+
+		filtered = vision::edge::filterEdges(edge, filtered);
+        cv::imshow("Separable Gaussian Blur", filtered);
 
         if (cv::waitKey(1) == 'q') break;
     }
