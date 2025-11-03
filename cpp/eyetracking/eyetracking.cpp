@@ -14,14 +14,70 @@
 #include "HistEq.h"
 #include "Color.h"
 #include "EdgeProcessing.h"
-#include "PuRe.h"
+#include "PuRe_old.h"
+#include "Pure.h"
+#include "Normalize.h"
 
 // ------------------- Main -------------------
 int main() {
+    //3 : OBS
+	//0 : Kamera laptop
     cv::VideoCapture cap(0);
     if (!cap.isOpened()) { std::cerr << "Cannot open camera\n"; return -1; }
 
-    cv::Mat frame, gray, smallGray, blurred, edge, clahe, filtered;
+    cv::Mat frame, gray, smallGray, blurred, edge, clahe, filtered, norm;
+    cv::Mat debug;
+
+    while (true) {
+        cap >> frame;
+        if (frame.empty()) break;
+		//frame = cv::imread("sample/sample2.jpg");
+        cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+        vision::histeq::CLAHE(gray, clahe, 3.0, cv::Size(8, 8));
+
+        //pure_old::Detector detector;
+        PuRe detector;
+        //auto result = detector.detect(gray, &debug);
+		Pupil pupil = detector.run(clahe);
+
+        drawMarker(frame, pupil.center, cv::Scalar(0, 0, 255));
+        if (pupil.size.width > 0)
+            ellipse(frame, pupil, cv::Scalar(0, 0, 255));
+
+        imshow("Results", frame);
+
+        //cv::ellipse(frame, cv::Point(result.center), cv::Size(result.axes), result.angle, 0, 360, cv::Scalar(0, 0, 255));
+
+        //cv::imshow("Frame", frame);
+        //cv::imshow("Debug", debug);
+        if (cv::waitKey(1) == 'q') break;
+    }
+
+    while (false) {
+        cap >> frame;
+		if (frame.empty()) break;
+		cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+        vision::histeq::CLAHE(gray, blurred, 2.0, cv::Size(8, 8));
+        cv::GaussianBlur(blurred, blurred, cv::Size(5, 5), 0);
+
+        cv::Mat lap;
+        cv::Laplacian(blurred, lap, CV_16S, 3);
+        convertScaleAbs(lap, lap);
+
+        cv::Mat sharpened;
+        cv::addWeighted(blurred, 1.7, lap, -0.7, 0, sharpened);
+
+        gray = sharpened;
+
+		pure_old::Detector detector;
+        auto result = detector.detect(gray, &debug);
+
+        cv::ellipse(frame, cv::Point(result.center), cv::Size(result.axes), result.angle, 0, 360, cv::Scalar(0, 0, 255));
+
+        cv::imshow("Frame", frame);
+		cv::imshow("Debug", debug);
+        if (cv::waitKey(1) == 'q') break;
+    }
 
     while (true) {
         cap >> frame;
@@ -30,6 +86,7 @@ int main() {
         // Convert to grayscale
         cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 		//gray = vision::color::BGR2Gray(frame);
+        
 
         // Downscale frame for speed
         smallGray = vision::resize::resize(gray, cv::Size(512, 512));
@@ -53,6 +110,7 @@ int main() {
         //cv::imshow("Original Gray", smallGray);
 
 		filtered = vision::edge::filterEdges(edge, filtered);
+		norm = vision::normalize::normalize(gray, 100, 255, cv::NORM_MINMAX);
         cv::imshow("Separable Gaussian Blur", filtered);
 
         if (cv::waitKey(1) == 'q') break;

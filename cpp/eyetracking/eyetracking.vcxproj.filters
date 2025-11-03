@@ -19,6 +19,9 @@
     <Filter Include="Source Files\include">
       <UniqueIdentifier>{b525de8e-23f2-4af9-9c46-ec49230dd9f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\sample">
+      <UniqueIdentifier>{ca478cae-0978-465f-a26f-d0f5b0c226ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="eyetracking.cpp">
@@ -49,6 +52,9 @@
       <Filter>Source Files\src</Filter>
     </ClCompile>
     <ClCompile Include="src\EdgeProcessing.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Normalize.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,5 +89,16 @@
     <ClInclude Include="include\EdgeProcessing.h">
       <Filter>Source Files\include</Filter>
     </ClInclude>
+    <ClInclude Include="include\Normalize.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="sample\sample1.png">
+      <Filter>Source Files\sample</Filter>
+    </Image>
+    <Image Include="sample\sample2.jpg">
+      <Filter>Source Files\sample</Filter>
+    </Image>
   </ItemGroup>
 </Project>
