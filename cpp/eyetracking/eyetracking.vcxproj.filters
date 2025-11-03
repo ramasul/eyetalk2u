@@ -51,6 +51,12 @@
     <ClCompile Include="src\PuRe.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\callibrate.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tracking.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
     <ClCompile Include="src\EdgeProcessing.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
@@ -90,6 +96,12 @@
       <Filter>Source Files\include</Filter>
     </ClInclude>
     <ClInclude Include="include\Normalize.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\callibrate.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tracking.h">
       <Filter>Source Files\include</Filter>
     </ClInclude>
   </ItemGroup>

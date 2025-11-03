@@ -152,6 +152,8 @@
     <ClCompile Include="src\Normalize.cpp" />
     <ClCompile Include="src\Pure.cpp" />
     <ClCompile Include="src\PuRe_old.cpp" />
+    <ClCompile Include="src\callibrate.cpp" />
+    <ClCompile Include="src\tracking.cpp" />
     <ClCompile Include="src\Resize.cpp" />
     <ClCompile Include="src\Utils.cpp" />
   </ItemGroup>
@@ -167,6 +169,8 @@
     <ClInclude Include="include\Normalize.h" />
     <ClInclude Include="include\Pure.h" />
     <ClInclude Include="include\PuRe_old.h" />
+    <ClInclude Include="include\callibrate.h" />
+    <ClInclude Include="include\tracking.h" />
     <ClInclude Include="include\Resize.h" />
     <ClInclude Include="include\Utils.h" />
     <ClInclude Include="include\Detector.h" />

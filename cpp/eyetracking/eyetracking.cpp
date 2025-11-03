@@ -17,16 +17,22 @@
 #include "PuRe_old.h"
 #include "Pure.h"
 #include "Normalize.h"
+#include "callibrate.h"
+#include "tracking.h"
 
 // ------------------- Main -------------------
 int main() {
     //3 : OBS
 	//0 : Kamera laptop
-    cv::VideoCapture cap(0);
+    int cam = 0;
+    cv::VideoCapture cap(cam);
     if (!cap.isOpened()) { std::cerr << "Cannot open camera\n"; return -1; }
 
     cv::Mat frame, gray, smallGray, blurred, edge, clahe, filtered, norm;
     cv::Mat debug;
+
+    // Store last calibration result for tracking demo
+    static std::vector<std::pair<cv::Point2f, cv::Point2f>> last_pairs;
 
     while (true) {
         cap >> frame;
@@ -50,7 +56,37 @@ int main() {
 
         //cv::imshow("Frame", frame);
         //cv::imshow("Debug", debug);
-        if (cv::waitKey(1) == 'q') break;
+        // if (cv::waitKey(1) == 'q') break;
+        int key = cv::waitKey(1);
+        if (key == 'q') break;
+        if (key == 'c') {
+            // Run calibration without erasing existing processing
+            cap.release();
+            vision::calibration::Calibrator calib;
+            // Example params: full HD-like target, 60px margin, 5x5 grid, 1s per point
+            auto pairs = calib.run(1000, 1000, 60, 4, 1.0);
+            last_pairs = pairs;
+            std::cout << "Calibration pairs (target -> measured):\n";
+            for (const auto &pr : pairs) {
+                std::cout << "(" << pr.first.x << "," << pr.first.y << ") -> ("
+                          << pr.second.x << "," << pr.second.y << ")\n";
+            }
+            // reopen camera
+            cap.open(cam);
+            if (!cap.isOpened()) { std::cerr << "Cannot reopen camera after calibration\n"; return -1; }
+        }
+        if (key == 't') {
+            if (last_pairs.size() >= 6) {
+                cap.release();
+                auto model = vision::calibration::Calibrator::fit_poly2(last_pairs);
+                vision::tracking::Tracker tracker(model, 720, 1280);
+                tracker.run(cam);
+                cap.open(cam);
+                if (!cap.isOpened()) { std::cerr << "Cannot reopen camera after tracking demo\n"; return -1; }
+            } else {
+                std::cout << "Run calibration first (press 'c').\n";
+            }
+        }
     }
 
     while (false) {
