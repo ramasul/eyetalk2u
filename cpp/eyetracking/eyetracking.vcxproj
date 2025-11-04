@@ -113,8 +113,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\LENOVO\Documents\opencv\opencv\build\x64\vc16\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_world4120.lib;opencv_world4120d.lib
-;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world4120.lib;opencv_world4120d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,8 +135,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\LENOVO\Documents\opencv\opencv\build\x64\vc16\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_world4120.lib;opencv_world4120d.lib
-;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world4120.lib;opencv_world4120d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -147,6 +145,7 @@
     <ClCompile Include="src\Color.cpp" />
     <ClCompile Include="src\Detector.cpp" />
     <ClCompile Include="src\EdgeProcessing.cpp" />
+    <ClCompile Include="src\haarcascade.cpp" />
     <ClCompile Include="src\HistEq.cpp" />
     <ClCompile Include="src\EdgeDetection.cpp" />
     <ClCompile Include="src\Normalize.cpp" />
@@ -164,6 +163,7 @@
     <ClInclude Include="include\Blur.h" />
     <ClInclude Include="include\Color.h" />
     <ClInclude Include="include\EdgeProcessing.h" />
+    <ClInclude Include="include\haarcascade.h" />
     <ClInclude Include="include\HistEq.h" />
     <ClInclude Include="include\EdgeDetection.h" />
     <ClInclude Include="include\Normalize.h" />
@@ -178,6 +178,13 @@
   <ItemGroup>
     <Image Include="sample\sample1.png" />
     <Image Include="sample\sample2.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="sample\ciel.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="haarcascade_eye.xml" />
+    <Xml Include="haarcascade_frontalface_default.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

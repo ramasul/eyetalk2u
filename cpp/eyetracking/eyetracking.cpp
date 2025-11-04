@@ -19,12 +19,21 @@
 #include "Normalize.h"
 #include "callibrate.h"
 #include "tracking.h"
+#include "haarcascade.h"
+
+using namespace vision::haar;
 
 // ------------------- Main -------------------
 int main() {
+    std::string faceCascadePath = "haarcascade_frontalface_default.xml";
+    std::string eyeCascadePath = "haarcascade_eye.xml";
+
+    EyeZoomer zoomer(faceCascadePath, eyeCascadePath, 200, 200);
+
     //3 : OBS
 	//0 : Kamera laptop
     int cam = 0;
+	std::string url = "sample/ciel.mp4"; // for IP camera
     cv::VideoCapture cap(cam);
     if (!cap.isOpened()) { std::cerr << "Cannot open camera\n"; return -1; }
 
@@ -37,9 +46,14 @@ int main() {
     while (true) {
         cap >> frame;
         if (frame.empty()) break;
+
 		//frame = cv::imread("sample/sample2.jpg");
         cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
         vision::histeq::CLAHE(gray, clahe, 3.0, cv::Size(8, 8));
+
+        EyeZoomResult result = zoomer.processFrame(clahe);
+		cv::imshow("Zoomed Eyes", result.zoomedEyes.empty() ? cv::Mat() : result.zoomedEyes[0]);
+		//clahe = result.zoomedEyes.empty() ? cv::Mat() : result.zoomedEyes[0];
 
         //pure_old::Detector detector;
         PuRe detector;
@@ -64,7 +78,7 @@ int main() {
             cap.release();
             vision::calibration::Calibrator calib;
             // Example params: full HD-like target, 60px margin, 5x5 grid, 1s per point
-            auto pairs = calib.run(1000, 1000, 60, 4, 1.0);
+            auto pairs = calib.run(1080, 1920, 60, 3, 1.0);
             last_pairs = pairs;
             std::cout << "Calibration pairs (target -> measured):\n";
             for (const auto &pr : pairs) {

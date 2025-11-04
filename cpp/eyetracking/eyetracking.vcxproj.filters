@@ -63,6 +63,15 @@
     <ClCompile Include="src\Normalize.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Detector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PuRe_old.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\haarcascade.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -104,6 +113,12 @@
     <ClInclude Include="include\tracking.h">
       <Filter>Source Files\include</Filter>
     </ClInclude>
+    <ClInclude Include="include\PuRe_old.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\haarcascade.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="sample\sample1.png">
@@ -112,5 +127,18 @@
     <Image Include="sample\sample2.jpg">
       <Filter>Source Files\sample</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="sample\ciel.mp4">
+      <Filter>Source Files\sample</Filter>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="haarcascade_eye.xml">
+      <Filter>Source Files</Filter>
+    </Xml>
+    <Xml Include="haarcascade_frontalface_default.xml">
+      <Filter>Source Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
