@@ -37,6 +37,7 @@
  */
 
 #include "PuRe.h"
+#include "RANSAC.h"
 
 #include <climits>
 #include <iostream>
@@ -51,7 +52,9 @@ string PuRe::desc = "PuRe (Santini et. al 2018a)";
 PuRe::PuRe() :
 	baseSize(320, 240),
 	expectedFrameSize(-1, -1),
-	outlineBias(5)
+	outlineBias(5),
+	useHaar(false),
+	eyeZoomer(nullptr)
 {
 	mDesc = desc;
 
@@ -612,6 +615,107 @@ void PuRe::searchInnerCandidates(vector<PupilCandidate>& candidates, PupilCandid
 	//imshow("dbg", dbg);
 }
 
+// My Own Function
+void PuRe::detect(Pupil& pupil, const cv::Mat& fullFrame)
+{
+	// 3.2 Edge Detection and Morphological Transformation
+	Mat detectedEdges = canny(input, true, true, 64, 0.7f, 0.4f);
+
+	// 3.3 Edge Segment Selection
+	filterEdges(detectedEdges);
+
+	// If using Haar, mask edges outside eye regions
+	if (useHaar && !currentEyeRegions.empty()) {
+		Mat eyeMask = Mat::zeros(detectedEdges.size(), CV_8U);
+
+		// Scale eye regions to working size
+		for (const auto& eyeRect : currentEyeRegions) {
+			Rect scaledRect(
+				eyeRect.x * scalingRatio,
+				eyeRect.y * scalingRatio,
+				eyeRect.width * scalingRatio,
+				eyeRect.height * scalingRatio
+			);
+			// Clamp to image bounds
+			scaledRect &= Rect(0, 0, detectedEdges.cols, detectedEdges.rows);
+			eyeMask(scaledRect).setTo(255);
+		}
+
+		// Apply mask - keep only edges in eye regions
+		detectedEdges.setTo(0, 255 - eyeMask);
+	}
+
+	vector<PupilCandidate> candidates;
+	findPupilEdgeCandidates(input, detectedEdges, candidates);
+	if (candidates.size() <= 0)
+	{
+		Mat selectedImage;
+		cv::cvtColor(input, selectedImage, cv::COLOR_GRAY2BGR);
+		cv::putText(selectedImage, "No candidate", cv::Point(10, 20),
+			cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255));
+		imshow("selected", selectedImage);
+		return;
+	}
+
+	// Combination
+	combineEdgeCandidates(input, detectedEdges, candidates);
+	for (auto c = candidates.begin(); c != candidates.end(); c++) {
+		if (c->outlineContrast < 0.5)
+			c->score = 0;
+		if (c->outline.size.area() > CV_PI * pow(0.5 * maxPupilDiameterPx, 2))
+			c->score = 0;
+		if (c->outline.size.area() < CV_PI * pow(0.5 * minPupilDiameterPx, 2))
+			c->score = 0;
+	}
+
+	// Scoring
+	sort(candidates.begin(), candidates.end());
+	PupilCandidate selected = candidates.back();
+
+	Mat selectedImage;
+	cv::cvtColor(input, selectedImage, cv::COLOR_GRAY2BGR);
+	selected.draw(selectedImage, Scalar(255, 0, 0));
+	imshow("selected", selectedImage);
+
+	// Post processing
+	searchInnerCandidates(candidates, selected);
+
+	// Temporal smoothing
+	static bool hasPrev = false;
+	static RotatedRect prev;
+	RotatedRect cur = selected.outline;
+
+	if (hasPrev) {
+		const float dist = (float)norm(prev.center - cur.center);
+		const float prev_major = std::max(prev.size.width, prev.size.height);
+		float eta = 0.25f;
+		if (selected.outlineContrast < 0.3f) eta = 0.1f;
+		if (dist > 1.5f * prev_major) eta = 0.1f;
+
+		Point2f c = prev.center * (1.0f - eta) + cur.center * eta;
+		Size2f s = prev.size * (1.0f - eta) + cur.size * eta;
+
+		float a0 = prev.angle;
+		float a1 = cur.angle;
+		float da = a1 - a0;
+		if (da > 180.0f) da -= 360.0f;
+		if (da < -180.0f) da += 360.0f;
+		float a = a0 + eta * da;
+		if (a < 0) a += 360.0f;
+		else if (a >= 360.0f) a -= 360.0f;
+
+		RotatedRect smooth(c, s, a);
+		pupil = smooth;
+		prev = smooth;
+	}
+	else {
+		pupil = cur;
+		prev = cur;
+		hasPrev = true;
+	}
+	pupil.confidence = selected.outlineContrast;
+}
+
 void PuRe::detect(Pupil& pupil)
 {
 	// 3.2 Edge Detection and Morphological Transformation
@@ -751,6 +855,13 @@ void PuRe::detect(Pupil& pupil)
 #endif
 }
 
+void PuRe::initHaar(const std::string& faceCascadePath, const std::string& eyeCascadePath) {
+	if (!eyeZoomer) {
+		eyeZoomer = std::make_unique<vision::haar::EyeZoomer>(
+			faceCascadePath, eyeCascadePath, 200, 200);
+	}
+}
+
 void PuRe::run(const Mat& frame, Pupil& pupil)
 {
 	pupil.clear();
@@ -835,6 +946,60 @@ void PuRe::run(const cv::Mat& frame, const cv::Rect& roi, Pupil& pupil, const fl
 
 	pupil.center += Point2f(roi.tl());
 	//imshow("dbg", dbg);
+}
+
+// Run run with Haar Cascade option
+void PuRe::run(const Mat& frame, Pupil& pupil, bool useHaarCascade)
+{
+	pupil.clear();
+	useHaar = useHaarCascade;
+	currentEyeRegions.clear();
+
+	init(frame);
+
+	// If Haar is enabled, detect eyes first
+	if (useHaar && eyeZoomer) {
+		Mat grayFrame;
+		if (frame.channels() == 3)
+			cvtColor(frame, grayFrame, COLOR_BGR2GRAY);
+		else
+			grayFrame = frame.clone();
+
+		// Detect eyes using Haar
+		Mat gray;
+		cvtColor(grayFrame, gray, COLOR_GRAY2BGR); // EyeZoomer expects BGR
+		auto eyeResult = eyeZoomer->processFrame(gray);
+
+		if (eyeResult.eyeCount == 0) {
+			cout << "No eyes detected by Haar cascade, skipping detection" << endl;
+			return;
+		}
+
+		currentEyeRegions = eyeResult.eyeRects;
+		// Store eye regions from Haar detection
+		// We need to extract the rectangles from the zoomed eyes
+		// For now, we'll use the full frame but this should be improved
+		// to actually get the eye rectangles from the Haar detector
+	}
+
+	// 3.1 Preprocessing: Downscaling
+	Mat downscaled = frame;
+	resize(frame, downscaled, Size(), scalingRatio, scalingRatio, cv::INTER_LINEAR);
+	normalize(downscaled, input, 0, 255, NORM_MINMAX, CV_8U);
+
+	workingSize.width = floor(scalingRatio * frame.cols);
+	workingSize.height = floor(scalingRatio * frame.rows);
+
+	estimateParameters(workingSize.height, workingSize.width);
+
+	dx = Mat::zeros(workingSize, CV_32F);
+	dy = Mat::zeros(workingSize, CV_32F);
+	magnitude = Mat::zeros(workingSize, CV_32F);
+	edgeType = Mat::zeros(workingSize, CV_8U);
+	edge = Mat::zeros(workingSize, CV_8U);
+
+	detect(pupil, frame);
+	pupil.resize(1.0 / scalingRatio, 1.0 / scalingRatio);
 }
 
 /*******************************************************************************
@@ -977,7 +1142,16 @@ inline bool PupilCandidate::isValid(const cv::Mat& intensityImage, const int& mi
 	//	return false;
 
 	//3 ��ԲԼ��
+	//ORIGINAL LINE
 	outline = fitEllipse(points);
+
+	//int minInlierRequirement = std::max(10, static_cast<int>(points.size() * 0.3));
+	//outline = fitEllipseRANSAC(points, 100, 1.5, minInlierRequirement);
+
+	//// Check if RANSAC failed to find a model
+	//if (outline.size.width == 0 || outline.size.height == 0)
+	//	return false;
+
 	boundaries = { 0, 0, intensityImage.cols, intensityImage.rows };
 	if (!boundaries.contains(outline.center))
 		return false;

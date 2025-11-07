@@ -45,6 +45,7 @@
 
 #include <opencv2/opencv.hpp>
 
+#include "haarcascade.h"
 #include "Detector.h"
 
 class PupilCandidate
@@ -194,7 +195,9 @@ public:
         return pupil;
     }
 
+    void initHaar(const std::string& faceCascadePath, const std::string& eyeCascadePath);
     void run(const cv::Mat& frame, Pupil& pupil);
+    void run(const cv::Mat& frame, Pupil& pupil, bool useHaarCascade);
     void run(const cv::Mat& frame, const cv::Rect& roi, Pupil& pupil, const float& userMinPupilDiameterPx = -1, const float& userMaxPupilDiameterPx = -1);
     bool hasPupilOutline() { return true; }
     bool hasConfidence() { return true; }
@@ -221,6 +224,13 @@ protected:
     void estimateParameters(int rows, int cols);
 
     /*
+		Haar Cascade
+    */
+    bool useHaar;
+    std::unique_ptr<vision::haar::EyeZoomer> eyeZoomer;
+    std::vector<cv::Rect> currentEyeRegions;
+
+    /*
      * Downscaling
      */
     cv::Size baseSize;
@@ -231,6 +241,7 @@ protected:
      *  Detection
      */
     void detect(Pupil& pupil);
+    void detect(Pupil& pupil, const cv::Mat& fullFrame);
 
     // Canny
     cv::Mat dx, dy, magnitude;
