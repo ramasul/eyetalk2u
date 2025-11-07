@@ -1,5 +1,6 @@
 #include "callibrate.h"
-#include "Pure.h" // use PuRe-based detector
+#include "PupilDetector.h"
+#include "Scale.h"
 
 #include <chrono>
 #include <iostream>
@@ -13,6 +14,11 @@
 namespace vision {
 	namespace calibration {
 		using Pair = std::pair<cv::Point2f, cv::Point2f>;
+		
+		Calibrator::Calibrator(const std::string& faceCascadePath, const std::string& eyeCascadePath)
+			: faceCascadePath(faceCascadePath), eyeCascadePath(eyeCascadePath)
+		{
+		}
 
 		static inline std::vector<cv::Point2f> grid_points(int height, int width, int m, int n)
 		{
@@ -50,7 +56,8 @@ namespace vision {
 			return img;
 		}
 
-		std::vector<Pair> Calibrator::run(int height, int width, int m, int n, double t)
+		template<typename Src>
+		std::vector<Pair> Calibrator::run(Src camera_index, int height, int width, int m, int n, double t, bool useHaar, vision::detection::PupilDetector& detector)
 		{
 			std::vector<Pair> result;
 			auto targets = grid_points(height, width, m, n);
@@ -80,14 +87,16 @@ namespace vision {
 			std::cout << "Starting calibration with " << targets.size() << " points\n";
 
 			// Camera
-			cv::VideoCapture cap(0);
+			cv::VideoCapture cap(camera_index);
 			if (!cap.isOpened()) {
 				std::cerr << "Cannot open camera\n";
 				return result;
 			}
 
-	PuRe detector;
-			cv::Mat frame, gray, dbg;
+			cv::waitKey(2000); // wait for camera to stabilize
+
+			// Use shared PupilDetector workflow/state
+			cv::Mat frame;
 
 			for (size_t k = 0; k < targets.size(); ++k)
 			{
@@ -107,8 +116,8 @@ namespace vision {
 				while (now_seconds() - start < t)
 				{
 					cap >> frame; if (frame.empty()) break;
-					cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
-					Pupil p = detector.run(gray);
+					// Use unified workflow with shared state (ROI/Haar locked preserved)
+					Pupil p = detector.processFrame(frame, useHaar);
 					if (p.size.width > 0)
 					{
 						sum_x += p.center.x;
@@ -190,4 +199,9 @@ namespace vision {
 	}
 }
 
+template std::vector<vision::calibration::Pair>
+vision::calibration::Calibrator::run<int>(int, int, int, int, int, double, bool, vision::detection::PupilDetector&);
+
+template std::vector<vision::calibration::Pair>
+vision::calibration::Calibrator::run<std::string>(std::string, int, int, int, int, double, bool, vision::detection::PupilDetector&);
 

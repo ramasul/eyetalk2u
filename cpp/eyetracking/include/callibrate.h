@@ -4,6 +4,8 @@
 #include <utility>
 #include <opencv2/opencv.hpp>
 
+#include "PupilDetector.h"
+
 // Simple calibration routine:
 // - Renders an n x n grid of points on a target image of size (width,height) with margins m
 // - For each target point: prompts user, waits countdown, collects pupil positions for t seconds, and averages them
@@ -16,15 +18,21 @@ namespace vision {
 		};
 		class Calibrator {
 		public:
+			// Constructor with cascade paths for PupilDetector
+			Calibrator(const std::string& faceCascadePath, const std::string& eyeCascadePath);
+			
 			// Runs calibration and returns vector of ((original_x, original_y), (captured_x, captured_y))
 			// height, width: target image size in pixels; m: margin in pixels; n: grid dimension; t: capture interval (seconds)
-			std::vector<std::pair<cv::Point2f, cv::Point2f>> run(int height, int width, int m, int n, double t);
+			template<typename Src>
+			std::vector<std::pair<cv::Point2f, cv::Point2f>> run(Src camera_index, int height, int width, int m, int n, double t, bool useHaar, vision::detection::PupilDetector& detector);
 
 			// Fit 2nd-order polynomial mapping from measured (captured) to target (original)
 			// pairs: ((target), (captured))
 			static Poly2 fit_poly2(const std::vector<std::pair<cv::Point2f, cv::Point2f>>& pairs);
 
 		private:
+			std::string faceCascadePath;
+			std::string eyeCascadePath;
 			cv::Mat make_target(int height, int width, int m, int n, const cv::Point& highlight) const;
 			double now_seconds() const;
 		};
