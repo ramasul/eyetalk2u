@@ -8,6 +8,7 @@ namespace vision {
 
         struct EyeZoomResult {
             std::vector<cv::Mat> zoomedEyes;
+            std::vector<cv::Rect> eyeRects;  // ADD THIS
             cv::Mat annotatedFrame;
             int eyeCount;
         };

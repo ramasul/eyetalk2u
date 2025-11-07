@@ -54,11 +54,11 @@ namespace vision {
             faceCascade.detectMultiScale(gray, faces, 1.1, 3, 0 | CASCADE_SCALE_IMAGE, Size(80, 80));
 
             if (faces.empty()) {
-                // fallback: detect eyes directly in the full frame
                 vector<Rect> eyes;
                 eyeCascade.detectMultiScale(gray, eyes, 1.1, 3, 0 | CASCADE_SCALE_IMAGE, Size(20, 20));
                 for (auto& e : eyes) {
                     result.zoomedEyes.push_back(cropAndZoom(frame, e));
+                    result.eyeRects.push_back(e);  // ADD THIS
                     rectangle(result.annotatedFrame, e, Scalar(0, 255, 0), 2);
                     result.eyeCount++;
                 }
@@ -72,6 +72,7 @@ namespace vision {
                 for (auto& e : eyes) {
                     Rect eyeInImg(e.x + f.x, e.y + f.y, e.width, e.height);
                     result.zoomedEyes.push_back(cropAndZoom(frame, eyeInImg));
+                    result.eyeRects.push_back(eyeInImg);  // ADD THIS
                     rectangle(result.annotatedFrame, eyeInImg, Scalar(0, 255, 0), 2);
                     result.eyeCount++;
                 }
