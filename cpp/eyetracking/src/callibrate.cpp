@@ -93,10 +93,25 @@ namespace vision {
 				return result;
 			}
 
-			cv::waitKey(2000); // wait for camera to stabilize
-
 			// Use shared PupilDetector workflow/state
 			cv::Mat frame;
+
+			std::cout << "Warming up camera for 2 seconds..." << std::endl;
+			double start_warmup = now_seconds();
+			while (now_seconds() - start_warmup < 2.0) // Your 2-second delay
+			{
+				cap >> frame; // Actively pull frames
+				if (frame.empty()) {
+					std::cerr << "Error: Camera failed during warm-up." << std::endl;
+					cv::destroyWindow("Calibration Target"); // Clean up
+					return result;
+				}
+
+				// This waitKey is tiny but important. It allows OpenCV to process
+				// window events and prevents the loop from freezing.
+				cv::waitKey(1);
+			}
+			std::cout << "Camera is ready. Starting calibration." << std::endl;
 
 			for (size_t k = 0; k < targets.size(); ++k)
 			{
