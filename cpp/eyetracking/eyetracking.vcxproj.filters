@@ -22,6 +22,9 @@
     <Filter Include="Source Files\sample">
       <UniqueIdentifier>{ca478cae-0978-465f-a26f-d0f5b0c226ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\tracking">
+      <UniqueIdentifier>{1141ab67-0fc4-42ba-92bb-96d6f8b2e06e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="eyetracking.cpp">
@@ -63,13 +66,28 @@
     <ClCompile Include="src\Normalize.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Detector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PuRe_old.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Preprocess.cpp">
+      <Filter>Source Files\src</Filter>
     </ClCompile>
     <ClCompile Include="src\haarcascade.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="tracking\TrackerMethod.cpp">
+      <Filter>Source Files\tracking</Filter>
+    </ClCompile>
+    <ClCompile Include="tracking\PuReST.cpp">
+      <Filter>Source Files\tracking</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PuRe_old.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Detector.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RANSAC.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PupilDetector.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,10 +131,28 @@
     <ClInclude Include="include\tracking.h">
       <Filter>Source Files\include</Filter>
     </ClInclude>
-    <ClInclude Include="include\PuRe_old.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\haarcascade.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="tracking\TrackerMethod.h">
+      <Filter>Source Files\tracking</Filter>
+    </ClInclude>
+    <ClInclude Include="tracking\PuReST.h">
+      <Filter>Source Files\tracking</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PuRe_old.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Preprocess.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RANSAC.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Scale.h">
+      <Filter>Source Files\include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PupilDetector.h">
       <Filter>Source Files\include</Filter>
     </ClInclude>
   </ItemGroup>

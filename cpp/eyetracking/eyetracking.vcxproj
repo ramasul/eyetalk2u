@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\LENOVO\Documents\opencv\opencv\build\include;$(ProjectDir)include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\LENOVO\Documents\opencv\opencv\build\include;$(ProjectDir)tracking;$(ProjectDir)include</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
       <OpenMPSupport>true</OpenMPSupport>
@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\LENOVO\Documents\opencv\opencv\build\include;$(ProjectDir)include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\LENOVO\Documents\opencv\opencv\build\include;$(ProjectDir)tracking;$(ProjectDir)include</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
       <OpenMPSupport>true</OpenMPSupport>
       <Optimization>MaxSpeed</Optimization>
@@ -149,12 +149,17 @@
     <ClCompile Include="src\HistEq.cpp" />
     <ClCompile Include="src\EdgeDetection.cpp" />
     <ClCompile Include="src\Normalize.cpp" />
+    <ClCompile Include="src\Preprocess.cpp" />
+    <ClCompile Include="src\PupilDetector.cpp" />
     <ClCompile Include="src\Pure.cpp" />
     <ClCompile Include="src\PuRe_old.cpp" />
     <ClCompile Include="src\callibrate.cpp" />
+    <ClCompile Include="src\RANSAC.cpp" />
     <ClCompile Include="src\tracking.cpp" />
     <ClCompile Include="src\Resize.cpp" />
     <ClCompile Include="src\Utils.cpp" />
+    <ClCompile Include="tracking\PuReST.cpp" />
+    <ClCompile Include="tracking\TrackerMethod.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -167,13 +172,19 @@
     <ClInclude Include="include\HistEq.h" />
     <ClInclude Include="include\EdgeDetection.h" />
     <ClInclude Include="include\Normalize.h" />
+    <ClInclude Include="include\PupilDetector.h" />
     <ClInclude Include="include\Pure.h" />
     <ClInclude Include="include\PuRe_old.h" />
+    <ClInclude Include="include\Preprocess.h" />
     <ClInclude Include="include\callibrate.h" />
+    <ClInclude Include="include\RANSAC.h" />
+    <ClInclude Include="include\Scale.h" />
     <ClInclude Include="include\tracking.h" />
     <ClInclude Include="include\Resize.h" />
     <ClInclude Include="include\Utils.h" />
     <ClInclude Include="include\Detector.h" />
+    <ClInclude Include="tracking\PuReST.h" />
+    <ClInclude Include="tracking\TrackerMethod.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="sample\sample1.png" />
