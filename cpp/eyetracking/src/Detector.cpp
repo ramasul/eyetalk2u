@@ -23,7 +23,7 @@ Rect PupilDetectionMethod::coarsePupilDetection(const Mat& frame, const float& m
 	int r_step = (int)max<float>(0.2f * (max_r + min_r), 1.0f);
 
 	Mat itg;
-	integral(downscaled, itg, CV_32S);
+	cv::integral(downscaled, itg, CV_32S);
 	Mat res = Mat::zeros(downscaled.rows, downscaled.cols, CV_32F);
 	float best_response = std::numeric_limits<float>::min();
 	deque< pair<Rect, float> > candidates;
