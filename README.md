@@ -15,7 +15,7 @@
 ```opencv_world[vers].lib``` and ```opencv_world[vers]d.lib```  
 For example if your OpenCV version is 4.12.0 then add
 ```opencv_world4120.lib``` and ```opencv_world4120d.lib```
-6. Copy the `opencv_world4120.dll` and `opencv_world4120d.dll` from
+6. Copy the `opencv_world4120.dll` and `opencv_world4120d.dll` AND `opencv_videoio_ffmpeg4120_64.dll` from
   ```[cvdir]\opencv\build\x64\vc16\bin``` into the same folder as eyetracking.sln
 
 ### Parallelization Setup
