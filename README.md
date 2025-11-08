@@ -28,3 +28,4 @@ For example if your OpenCV version is 4.12.0 then add
 1. Right-click on project &rarr; Properties
 2. Under C/C++ &rarr; General &rarr; Additional Include Directories:
 ```$(ProjectDir)include```
+```$(ProjectDir)tracking```
