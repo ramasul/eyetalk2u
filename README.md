@@ -42,10 +42,10 @@ cd vcpkg
 .\bootstrap-vcpkg.bat
 ```
 3. Integrate with your Visual Studio using this command  
-`.\vcpkg integrate install`
+```.\vcpkg integrate install```
 4. Install Zlib by running  
-`.\vcpkg install zlib:x64-windows`  
+```.\vcpkg install zlib:x64-windows```  
 5. Install uWebSockets by running
-`.\vcpkg install uwebsockets:x64-windows`
+```.\vcpkg install uwebsockets:x64-windows```
 6. Just to be safe you can run `.\vcpkg integrate install` once again.
 7. Done!
