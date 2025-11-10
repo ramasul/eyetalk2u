@@ -19,14 +19,14 @@ int main() {
 
     //3 : OBS
 	//0 : Kamera laptop
-    //int cam = 0;
-	std::string cam = "http://192.168.1.5:8080/video"; // for IP camera
+    int cam = 0;
+	//std::string cam = "http://192.168.1.5:8080/video"; // for IP camera
 	std::string url = "sample/ciel.mp4"; // for IP camera
     cv::VideoCapture cap(cam);
     if (!cap.isOpened()) { std::cerr << "Cannot open camera\n"; return -1; }
 
     cv::Mat frame;
-    bool useHaar = false; // toggles Haar zoom acquisition
+    bool useHaar = true; // toggles Haar zoom acquisition
 	int screenWidth = 1920;
 	int screenHeight = 1080;
 

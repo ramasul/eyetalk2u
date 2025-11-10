@@ -1,4 +1,5 @@
-﻿#include <uwebsockets/App.h>
+﻿#if __has_include(<uwebsockets/App.h>)
+#include <uwebsockets/App.h>
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <thread>
@@ -27,6 +28,15 @@ std::mutex frameMutex;
 std::mutex modelMutex;
 std::mutex cameraMutex; // Protect camera access
 cv::Mat latestFrame;
+
+// --- Camera source selection ---
+enum CameraType { NONE, CAM_INT, CAM_LINK };
+struct CameraConfig {
+    CameraType type = NONE;
+    int camIndex = -1;
+    std::string link;
+};
+CameraConfig currentCamera = { CAM_INT, 0, "" };
 
 // Calibration model for mapping
 Poly2 calibrationModel;
@@ -71,7 +81,7 @@ cv::Point2f map_to_screen(const cv::Point2f& p) {
     return cv::Point2f(static_cast<float>(U), static_cast<float>(V));
 }
 
-int socket_module() { //Change to main()
+int web_services() { //Change to main()
     std::string faceCascadePath = "haarcascade_frontalface_default.xml";
     std::string eyeCascadePath = "haarcascade_eye.xml";
 
@@ -109,7 +119,15 @@ int socket_module() { //Change to main()
             // Open camera if not opened
             if (!cameraOpened) {
                 std::lock_guard<std::mutex> lock(cameraMutex);
-                cap.open(0);
+                if (currentCamera.type == CAM_LINK)
+                    cap.open(currentCamera.link);
+                else if (currentCamera.type == CAM_INT)
+                    cap.open(currentCamera.camIndex);
+                else {
+                    std::cerr << "Please set the camera first using /camera/link or /camera/cam\n";
+                    std::this_thread::sleep_for(1000ms);
+                    continue;
+                }
                 if (cap.isOpened()) {
                     cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
                     cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
@@ -218,6 +236,57 @@ int socket_module() { //Change to main()
         res->end("Haar reset - detector state cleared");
         });
 
+    // HTTP: set camera link
+    app.get("/camera/link", [setCORS](auto* res, auto* req) {
+        setCORS(res);
+        if (backendActive.load()) {
+            res->end("Please turn off backend first");
+            return;
+        }
+
+        std::string_view link = req->getQuery("link");
+        if (link.empty()) {
+            res->end("Missing ?link parameter");
+            return;
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(cameraMutex);
+            currentCamera.type = CAM_LINK;
+            currentCamera.link = std::string(link);
+            currentCamera.camIndex = -1;
+        }
+
+        res->end("Camera set to link: " + std::string(link));
+        });
+
+    // HTTP: set camera index
+    app.get("/camera/cam", [setCORS](auto* res, auto* req) {
+        setCORS(res);
+        if (backendActive.load()) {
+            res->end("Please turn off backend first");
+            return;
+        }
+
+        std::string_view camStr = req->getQuery("cam");
+        if (camStr.empty()) {
+            res->end("Missing ?cam parameter");
+            return;
+        }
+
+        int camIndex = std::stoi(std::string(camStr));
+
+        {
+            std::lock_guard<std::mutex> lock(cameraMutex);
+            currentCamera.type = CAM_INT;
+            currentCamera.camIndex = camIndex;
+            currentCamera.link.clear();
+        }
+
+        res->end("Camera set to index: " + std::to_string(camIndex));
+        });
+
+
     // HTTP: start calibration
     app.get("/calibrate", [&detector, faceCascadePath, eyeCascadePath, setCORS](auto* res, auto* req) {
         setCORS(res);
@@ -320,3 +389,7 @@ int socket_module() { //Change to main()
 
     app.run();
 }
+
+#else
+#pragma message("uWebSocket not found — Please Install following the README on github")
+#endif
