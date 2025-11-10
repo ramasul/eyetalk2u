@@ -29,3 +29,23 @@ For example if your OpenCV version is 4.12.0 then add
 2. Under C/C++ &rarr; General &rarr; Additional Include Directories:  
 ```$(ProjectDir)include```  
 ```$(ProjectDir)tracking```
+
+### C++ Version Setup [Important!]  
+1. Right-click on project &rarr; Properties
+2. Under C/C++ &rarr; Language change C++ Language Standard into `ISO C++20 Standard (/std:c++20)`
+
+### uWebSockets Setup [Important!]
+1. Clone `git clone https://github.com/microsoft/vcpkg.git` into any folder (DON'T CLONE ON THE SAME PROJECT)
+2. Move to that folder and build vcpkg by running  
+```
+cd vcpkg  
+.\bootstrap-vcpkg.bat
+```
+3. Integrate with your Visual Studio using this command  
+`.\vcpkg integrate install`
+4. Install Zlib by running  
+`.\vcpkg install zlib:x64-windows`  
+5. Install uWebSockets by running
+`.\vcpkg install uwebsockets:x64-windows`
+6. Just to be safe you can run `.\vcpkg integrate install` once again.
+7. Done!
