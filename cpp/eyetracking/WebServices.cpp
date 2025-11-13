@@ -210,6 +210,13 @@ int web_services() { //Change to main()
         res->writeHeader("Access-Control-Allow-Headers", "Content-Type");
         };
 
+    // Handle preflight request (CORS)
+    app.options("/*", [setCORS](auto* res, auto* req) {
+        setCORS(res);
+        res->end();
+        });
+
+
     // HTTP: start backend
     app.get("/start", [setCORS](auto* res, auto* req) {
         setCORS(res);
