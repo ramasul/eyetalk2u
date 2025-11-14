@@ -90,6 +90,9 @@
     <ClCompile Include="src\PupilDetector.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
+    <ClCompile Include="Testing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
