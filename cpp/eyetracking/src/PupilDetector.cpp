@@ -33,6 +33,7 @@ namespace vision {
 			
 			// Step 1: Resize frame to default height
 			cv::Mat frameSmall = vision::scale::resizeToHeight(frame, 512);
+			cv::flip(frameSmall, frameSmall, 1); // Mirror
 			cv::Mat gray;
 			cv::cvtColor(frameSmall, gray, cv::COLOR_BGR2GRAY);
 			
