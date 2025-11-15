@@ -312,11 +312,17 @@ int web_services() { //Change to main()
             
             // Wait a bit for main camera thread to release camera
             std::this_thread::sleep_for(500ms);
-            
+            std::vector<std::pair<cv::Point2f, cv::Point2f>> pairs;
             try {
                 Calibrator calib(faceCascadePath, eyeCascadePath);
                 // Example params: full HD-like target, 60px margin, 3x3 grid, 2.0s per point
-                auto pairs = calib.run(0, screenHeight, screenWidth, 60, 3, 2.0, useHaar.load(), detector);
+                if (currentCamera.type == CAM_LINK)
+                    pairs = calib.run(currentCamera.link, screenHeight, screenWidth, 60, 3, 2.0, useHaar.load(), detector);
+                else if (currentCamera.type == CAM_INT)
+                    pairs = calib.run(currentCamera.camIndex, screenHeight, screenWidth, 60, 3, 2.0, useHaar.load(), detector);
+                else {
+                    pairs = calib.run(0, screenHeight, screenWidth, 60, 3, 2.0, useHaar.load(), detector);
+                }
                 
                 if (pairs.size() >= 6) {
                     auto model = Calibrator::fit_poly2(pairs);
