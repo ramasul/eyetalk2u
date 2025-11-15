@@ -24,6 +24,7 @@ std::atomic<bool> backendActive{ false };
 std::atomic<bool> calibrationActive{ false };
 std::atomic<bool> useHaar{ true };
 std::atomic<bool> calibrationRunning{ false }; // Prevent camera conflicts during calibration
+std::atomic<int> rotateDegree{ 0 };
 std::mutex frameMutex;
 std::mutex modelMutex;
 std::mutex cameraMutex; // Protect camera access
@@ -81,7 +82,7 @@ cv::Point2f map_to_screen(const cv::Point2f& p) {
     return cv::Point2f(static_cast<float>(U), static_cast<float>(V));
 }
 
-int web_services() { //Change to main()
+int main() { //Change to main()
     std::string faceCascadePath = "haarcascade_frontalface_default.xml";
     std::string eyeCascadePath = "haarcascade_eye.xml";
 
@@ -172,6 +173,14 @@ int web_services() { //Change to main()
             {
                 std::lock_guard<std::mutex> lock(frameMutex);
                 latestFrame = frame.clone();
+            }
+
+            // Apply rotation if needed
+            int deg = rotateDegree.load();
+            if (deg != 0) {
+                cv::Point2f center(frame.cols / 2.0f, frame.rows / 2.0f);
+                cv::Mat rot = cv::getRotationMatrix2D(center, deg, 1.0);
+                cv::warpAffine(frame, frame, rot, frame.size());
             }
 
             // Process frame using unified workflow
@@ -293,6 +302,22 @@ int web_services() { //Change to main()
         res->end("Camera set to index: " + std::to_string(camIndex));
         });
 
+    // HTTP: set rotation degree
+    app.get("/rotate", [setCORS](auto* res, auto* req) {
+        setCORS(res);
+
+        std::string_view deg = req->getQuery("degree");
+        if (deg.empty()) {
+            res->end("Missing ?degree");
+            return;
+        }
+
+        int d = std::stoi(std::string(deg));
+        d = (d % 360 + 360) % 360;   // Normalize
+
+        rotateDegree.store(d);
+        res->end("Rotation set to " + std::to_string(d));
+        });
 
     // HTTP: start calibration
     app.get("/calibrate", [&detector, faceCascadePath, eyeCascadePath, setCORS](auto* res, auto* req) {
