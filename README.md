@@ -49,3 +49,53 @@ cd vcpkg
 ```.\vcpkg install uwebsockets:x64-windows```
 6. Just to be safe you can run `.\vcpkg integrate install` once again.
 7. Done!
+
+## 👥 Team Introduction
+
+### **Ketua Kelompok**
+**Naufal Septio Fathurrahman**  
+NIM: 22/502670/TK/54886  
+Program Studi: **Teknologi Informasi**  
+Email: naufalseptiofathurrahman@mail.ugm.ac.id  
+
+---
+
+### **Anggota 1**
+**Annisa Nabila**  
+NIM: 22/493835/TK/54127  
+Program Studi: **Teknik Biomedis**  
+Email: annisanabila@mail.ugm.ac.id  
+
+---
+
+### **Anggota 2**
+**Awaliya Shabrina**  
+NIM: 22/494095/TK/54174  
+Program Studi: **Teknik Biomedis**  
+Email: awaliyashabrina@mail.ugm.ac.id  
+
+---
+
+### **Anggota 3**
+**Cornelia Zefanya**  
+NIM: 22/499785/TK/54764  
+Program Studi: **Teknik Elektro**  
+Email: corneliazefanya@mail.ugm.ac.id  
+
+---
+
+### **Anggota 4**
+**Rama Sulaiman Nurcahyo**  
+NIM: 22/492727/TK/53940  
+Program Studi: **Teknologi Informasi**  
+Email: ramasulaimannurcahyo@mail.ugm.ac.id  
+
+---
+
+### **Dosen Pembimbing**
+**Dr.Eng. Ir. Sunu Wibirama, M.Eng., IPM.**  
+NIP/NIU: 198510262015041003  
+
+---
+Departemen Teknik Elektro dan Teknologi Informasi  
+Fakultas Teknik, Universitas Gadjah Mada  
